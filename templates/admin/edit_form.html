@@ -1,0 +1,319 @@
+{% extends 'layout.html' %}
+
+{% block page_title %}
+    {% if row_index == 0 %}Tambah Data{% else %}Edit Data{% endif %} - {{ modul_name }}
+{% endblock %}
+
+{% block content %}
+<div class="p-4 md:p-6 bg-gray-50 min-h-screen dark:bg-gray-900">
+    <div class="flex items-center gap-4 mb-6">
+         <a href="{{ url_for('manage_data', kppn_id=kppn_id, modul_id=modul_id) }}" class="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white transition-colors">
+            <i class="fas fa-arrow-left text-2xl"></i>
+        </a>
+        <div>
+            <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white leading-tight">
+                {% if row_index == 0 %}Formulir Data Baru{% else %}Edit Data Baris #{{ row_index }}{% endif %}
+            </h2>
+            <p class="text-lg text-gray-500 dark:text-gray-400">{{ modul_name }} untuk KPPN {{ kppn_name }}</p>
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200/80 dark:border-gray-700">
+        <form method="POST">
+            <div class="p-6 md:p-8 space-y-8">
+            
+            {# ============================================= #}
+            {# FORMULIR KHUSUS UNTUK MODUL SP2D              #}
+            {# ============================================= #}
+            {% if form_groups and modul_id == 'sp2d' %}
+                <div class="p-5 bg-blue-50/60 dark:bg-gray-900/50 rounded-xl border border-blue-200 dark:border-gray-700">
+                    <h3 class="text-lg font-bold text-blue-900 dark:text-blue-300 flex items-center gap-3"><i class="fas fa-calendar-alt"></i>Informasi Periode</h3>
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {% for field in form_groups.periode %}{% if field in headers %}
+                        <div>
+                            <label for="{{ field }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{{ field }}</label>
+                             
+                            {% if field == 'Bulan' %}
+                                <select id="{{ field }}" name="{{ field }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    {% set bulan_list = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] %}
+                                    {% for bulan in bulan_list %}
+                                        <option value="{{ bulan }}" {% if bulan == row_data.get('Bulan', '') %}selected{% endif %}>{{ bulan }}</option>
+                                    {% endfor %}
+                                </select>
+                            {% elif field == 'Minggu' %}
+                                <select id="{{ field }}" name="{{ field }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    {% set minggu_list = ['Minggu I', 'Minggu II', 'Minggu III', 'Minggu IV', 'Minggu V'] %}
+                                    {% for minggu in minggu_list %}
+                                        <option value="{{ minggu }}" {% if minggu == row_data.get('Minggu', '') %}selected{% endif %}>{{ minggu }}</option>
+                                    {% endfor %}
+                                </select>
+                            {% else %}
+                                <input type="text" id="{{ field }}" name="{{ field }}" value="{{ row_data.get(field, '') }}" class="datepicker block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            {% endif %}
+                        </div>
+                        {% endif %}{% endfor %}
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-3 mb-4"><i class="fas fa-clock text-gray-400"></i>Data Input per Jam</h3>
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
+                        {% for slot_name, fields in form_groups.slots.items() %}
+                        <div class="time-slot-group p-4 bg-gray-50/70 dark:bg-gray-700/30 rounded-xl border dark:border-gray-700 space-y-4">
+                            <h4 class="font-bold text-gray-700 dark:text-gray-200 border-b dark:border-gray-600 pb-2">{{ slot_name }}</h4>
+                            {% for field in fields %}{% if field in headers %}
+                            <div>
+                                <label for="{{ field }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{{ field.replace(slot_name, '').strip() or 'Total' }}</label>
+                                {% set is_total_field = not ('<' in field or '>' in field) %}
+                                <input 
+                                    type="number" 
+                                    id="{{ field }}" 
+                                    name="{{ field }}" 
+                                    value="{{ row_data.get(field, 0) }}" 
+                                    class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 shadow-sm 
+                                        {% if is_total_field %}bg-gray-200 dark:bg-gray-600 cursor-not-allowed text-gray-700 dark:text-gray-300{% else %}bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:border-blue-500 focus:ring-blue-500{% endif %}"
+                                    {% if is_total_field %}readonly{% endif %}>
+                            </div>
+                            {% endif %}{% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="p-5 bg-gray-100 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center gap-3"><i class="fas fa-calculator text-gray-400"></i>Data Agregat (Terisi Otomatis)</h3>
+                    <div class="form-actions-aggregate mt-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+                         {% for field in form_groups.agregat %}{% if field in headers %}
+                        <div>
+                            <label for="{{ field }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{{ field }}</label>
+                            <input type="number" id="{{ field }}" name="{{ field }}" value="{{ row_data.get(field, 0) }}" class="block w-full text-sm rounded-lg border-gray-400 dark:border-gray-600 shadow-sm bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 cursor-not-allowed" readonly>
+                        </div>
+                        {% endif %}{% endfor %}
+                    </div>
+                </div>
+            
+            {# --- FORMULIR BARU UNTUK ADK, PMRT, KARWAS --- #}
+            {% elif modul_id in ['adk', 'pmrt', 'karwas'] %}
+            <div class="p-5 bg-blue-50/60 dark:bg-gray-900/50 rounded-xl border border-blue-200 dark:border-gray-700">
+                <h3 class="text-lg font-bold text-blue-900 dark:text-blue-300 flex items-center gap-3"><i class="fas fa-calendar-alt"></i>Informasi Periode</h3>
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {% for header in ['Bulan', 'Minggu', 'Tanggal Awal', 'Tanggal Akhir'] %}{% if header in headers %}
+                    <div>
+                        <label for="{{ header }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{{ header }}</label>
+                        {% if header == 'Bulan' %}
+                            <select id="{{ header }}" name="{{ header }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                {% set bulan_list = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] %}
+                                {% for bulan in bulan_list %}
+                                    <option value="{{ bulan }}" {% if bulan == row_data.get('Bulan', '') %}selected{% endif %}>{{ bulan }}</option>
+                                {% endfor %}
+                            </select>
+                        {% elif header == 'Minggu' %}
+                            <select id="{{ header }}" name="{{ header }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                {% set minggu_list = ['Minggu I', 'Minggu II', 'Minggu III', 'Minggu IV', 'Minggu V'] %}
+                                {% for minggu in minggu_list %}
+                                    <option value="{{ minggu }}" {% if minggu == row_data.get('Minggu', '') %}selected{% endif %}>{{ minggu }}</option>
+                                {% endfor %}
+                            </select>
+                        {% else %}
+                            <input type="text" id="{{ header }}" name="{{ header }}" value="{{ row_data.get(header, '') }}" class="datepicker block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        {% endif %}
+                    </div>
+                    {% endif %}{% endfor %}
+                </div>
+            </div>
+            
+            {% if modul_id == 'adk' %}
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-3 mb-4"><i class="fas fa-file-contract text-gray-400"></i>Data ADK Kontraktual</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="adk-tepat-waktu" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Tepat Waktu</label>
+                            <input type="number" id="adk-tepat-waktu" name="Tepat Waktu" value="{{ row_data.get('Tepat Waktu', '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="adk-terlambat" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Terlambat</label>
+                            <input type="number" id="adk-terlambat" name="Terlambat" value="{{ row_data.get('Terlambat', '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="total-adk-kontraktual" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Total ADK Kontraktual</label>
+                            <input type="number" id="total-adk-kontraktual" name="Total ADK Kontraktual" value="{{ row_data.get('Total ADK Kontraktual', '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 cursor-not-allowed shadow-sm" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                     <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-3 my-4"><i class="fas fa-pencil-alt text-gray-400"></i>Catatan</h3>
+                     {% for header in ['Catatan'] %}{% if header in headers %}
+                     <div>
+                        <textarea id="{{ header }}" name="{{ header }}" rows="3" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ row_data.get(header, '') }}</textarea>
+                     </div>
+                     {% endif %}{% endfor %}
+                </div>
+            {% elif modul_id == 'pmrt' %}
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-3 mb-4"><i class="fas fa-ban text-gray-400"></i>Data Penolakan PMRT</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                         <div>
+                            <label for="pmrt-formal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Penolakan Formal</label>
+                            <input type="number" id="pmrt-formal" name="Penolakan Formal" value="{{ row_data.get('Penolakan Formal', '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="pmrt-substantif" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Penolakan Substantif</label>
+                            <input type="number" id="pmrt-substantif" name="Penolakan Substantif" value="{{ row_data.get('Penolakan Substantif', '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="total-pmrt" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Total</label>
+                            <input type="number" id="total-pmrt" name="Total" value="{{ row_data.get('Total', '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 cursor-not-allowed shadow-sm" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                     <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-3 my-4"><i class="fas fa-pencil-alt text-gray-400"></i>Catatan</h3>
+                     {% for header in ['Catatan'] %}{% if header in headers %}
+                     <div>
+                        <textarea id="{{ header }}" name="{{ header }}" rows="3" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ row_data.get(header, '') }}</textarea>
+                     </div>
+                     {% endif %}{% endfor %}
+                </div>
+            {% elif modul_id == 'karwas' %}
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-3 mb-4"><i class="fas fa-file-invoice-dollar text-gray-400"></i>Data Pengawasan UP</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="karwas-up-1-2" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Jatuh tempo 1-2 hari</label>
+                            <input type="number" id="karwas-up-1-2" name="Jatuh tempo 1-2 hari" value="{{ row_data.get('Jatuh tempo 1-2 hari', '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="karwas-up-gt-2" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Jatuh tempo >2 hari</label>
+                            <input type="number" id="karwas-up-gt-2" name="Jatuh tempo >2 hari" value="{{ row_data.get('Jatuh tempo >2 hari', '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="total-up" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Total UP</label>
+                            <input type="number" id="total-up" name="Total UP" value="{{ row_data.get('Total UP', '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 cursor-not-allowed shadow-sm" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-3 mt-8 mb-4"><i class="fas fa-money-check-alt text-gray-400"></i>Data Pengawasan TUP</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="karwas-tup-1-2" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Terlambat 1-2 hari</label>
+                            <input type="number" id="karwas-tup-1-2" name="Terlambat 1-2 hari" value="{{ row_data.get('Terlambat 1-2 hari', '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="karwas-tup-gt-2" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Terlambat >2 hari</label>
+                            <input type="number" id="karwas-tup-gt-2" name="Terlambat >2 hari" value="{{ row_data.get('Terlambat >2 hari', '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="total-tup" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Total TUP</label>
+                            <input type="number" id="total-tup" name="Total TUP" value="{{ row_data.get('Total TUP', '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 cursor-not-allowed shadow-sm" readonly>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {# --- BLOK BARU UNTUK MODUL LAINNYA --- #}
+            {% elif modul_id == 'lainnya' %}
+                <div class="p-5 bg-blue-50/60 dark:bg-gray-900/50 rounded-xl border border-blue-200 dark:border-gray-700">
+                    <h3 class="text-lg font-bold text-blue-900 dark:text-blue-300 flex items-center gap-3"><i class="fas fa-calendar-alt"></i>Informasi Periode</h3>
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {% for header in ['Bulan', 'Minggu', 'Tanggal Awal', 'Tanggal Akhir'] %} {% if header in headers %}
+                        <div>
+                            <label for="{{ header }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{{ header }}</label>
+                             {% if header == 'Bulan' %}
+                                <select id="{{ header }}" name="{{ header }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    {% set bulan_list = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] %}
+                                    {% for bulan in bulan_list %}
+                                        <option value="{{ bulan }}" {% if bulan == row_data.get('Bulan', '') %}selected{% endif %}>{{ bulan }}</option>
+                                    {% endfor %}
+                                </select>
+                            {% elif header == 'Minggu' %}
+                                <select id="{{ header }}" name="{{ header }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    {% set minggu_list = ['Minggu I', 'Minggu II', 'Minggu III', 'Minggu IV', 'Minggu V'] %}
+                                    {% for minggu in minggu_list %}
+                                        <option value="{{ minggu }}" {% if minggu == row_data.get('Minggu', '') %}selected{% endif %}>{{ minggu }}</option>
+                                    {% endfor %}
+                                </select>
+                            {% else %}
+                                <input type="text" id="{{ header }}" name="{{ header }}" value="{{ row_data.get(header, '') }}" class="datepicker block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            {% endif %}
+                        </div>
+                        {% endif %}{% endfor %}
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-3 mb-4"><i class="fas fa-inbox text-gray-400"></i>Modul Penerimaan</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {% for header in ['Monitoring PFK Salah Satker/Akun', 'Monitoring PFK Salah Potong', 'Monitoring PFK Salah Pecahan'] %}{% if header in headers %}
+                        <div>
+                            <label for="{{ header }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{{ header.replace('Monitoring PFK ', '') }}</label>
+                            <input type="number" id="{{ header }}" name="{{ header }}" value="{{ row_data.get(header, '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        {% endif %}{% endfor %}
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-3 mb-4"><i class="fas fa-pause-circle text-gray-400"></i>Data Suspend</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {% for header in ['Suspend Pengembalian Belanja', 'Suspend Satker penerimaan yang belum dikoreksi', 'Suspend akun penerimaan yang belum dikoreksi'] %}{% if header in headers %}
+                        <div>
+                            <label for="{{ header }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{{ header.replace('Suspend ', '') }}</label>
+                            <input type="number" id="{{ header }}" name="{{ header }}" value="{{ row_data.get(header, '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        {% endif %}{% endfor %}
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-3 mb-4"><i class="fas fa-landmark text-gray-400"></i>Modul Bank</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {% for header in ['Total Retur', '≤8 hari', 'Monitoring retur yang belum diproses', 'SP2D Void (dibatalkan)', 'SP2D Backdate'] %}{% if header in headers %}
+                        <div>
+                            <label for="{{ header }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{{ header }}</label>
+                            <input type="number" id="{{ header }}" name="{{ header }}" value="{{ row_data.get(header, '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        {% endif %}{% endfor %}
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-3 mb-4"><i class="fas fa-chart-line text-gray-400"></i>Modul Renkas & SBSN</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {% for header in ['Tingkat Deviasi RPD Harian', 'Pemberian dispensasi', 'Tingkat Deviasi RPD SBSN'] %}{% if header in headers %}
+                        <div>
+                            <label for="{{ header }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{{ header }}</label>
+                            <input type="number" id="{{ header }}" name="{{ header }}" value="{{ row_data.get(header, '0') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        {% endif %}{% endfor %}
+                    </div>
+                </div>
+            
+            {# ============================================= #}
+            {# FORMULIR STANDAR (FALLBACK)                   #}
+            {# ============================================= #}
+            {% else %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for header in headers %}
+                    <div>
+                        <label for="{{ header }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{{ header }}</label>
+                        <input type="text" id="{{ header }}" name="{{ header }}" value="{{ row_data.get(header, '') }}" class="block w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            </div>
+
+            <div class="p-6 bg-gray-50/70 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 flex justify-end items-center gap-4 rounded-b-2xl">
+                <a href="{{ url_for('manage_data', kppn_id=kppn_id, modul_id=modul_id) }}" class="px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-gray-600">Batal</a>
+                <button type="submit" class="px-6 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 flex items-center gap-2">
+                    <i class="fas fa-save"></i> Simpan Data
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{# File JS ini tidak perlu diubah, biarkan seperti semula #}
+<script src="{{ url_for('static', filename='js/edit_form.js') }}"></script>
+{% endblock %}

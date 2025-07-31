@@ -1,0 +1,48 @@
+{% extends "auth_layout.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block auth_content %}
+<div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 space-y-6 animate-fade-in-up">
+    <div class="flex justify-center">
+        <img src="{{ url_for('static', filename='image/djpb_sulut.webp') }}" alt="Logo DJPb" class="h-20">
+    </div>
+
+    <form method="POST" action="" class="space-y-4">
+        {{ form.hidden_tag() }}
+        <h2 class="text-2xl font-bold text-center text-gray-800">Buat Akun Baru</h2>
+
+        <div>
+            <label for="username" class="sr-only">Username</label>
+            {{ form.username(class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder="Username") }}
+            {% if form.username.errors %}
+                <p class="text-xs text-red-600 mt-1">{{ form.username.errors[0] }}</p>
+            {% endif %}
+        </div>
+        
+        <div>
+            <label for="password" class="sr-only">Password</label>
+            {{ form.password(class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder="Password") }}
+             {% if form.password.errors %}
+                <p class="text-xs text-red-600 mt-1">{{ form.password.errors[0] }}</p>
+            {% endif %}
+        </div>
+
+        <div class="pt-2">
+            {{ form.submit(class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer", value="Buat Akun") }}
+        </div>
+    </form>
+    
+    <p class="text-sm text-center text-gray-600">
+        Sudah punya akun? <a href="{{ url_for('login') }}" class="font-medium text-blue-600 hover:underline">Login di sini</a>
+    </p>
+</div>
+
+<style>
+    @keyframes fade-in-up {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up { animation: fade-in-up 0.5s ease-out forwards; }
+</style>
+{% endblock %}

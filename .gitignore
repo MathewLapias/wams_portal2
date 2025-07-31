@@ -1,0 +1,13 @@
+# File Rahasia
+credentials.json
+database.db
+
+# Virtual Environment & Cache
+venv/
+functions/venv/
+__pycache__/
+*.pyc
+
+# File Lokal Firebase
+.firebaserc
+firebase-debug.log*

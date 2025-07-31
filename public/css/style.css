@@ -1,0 +1,42 @@
+/* =================================
+   GAYA CSS UTAMA (WAMS - VERSI FINAL)
+   ================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary-blue: #0052cc;
+    --background-color: #f4f5f7;
+    --card-background: #ffffff;
+    --text-primary: #172b4d;
+    --text-secondary: #5e6c84;
+    --border-color: #dfe1e6;
+    --border-radius: 8px;
+    --shadow-sm: rgba(9, 30, 66, 0.08) 0px 1px 2px 0px;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    /* Semua styling body lainnya sekarang di-handle oleh Tailwind di layout.html */
+} 
+
+/* === KONTEN BERANDA & KOMPONEN LAINNYA (yang tidak menggunakan Tailwind) === */
+.welcome-container {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 48px;
+    display: flex;
+    align-items: center;
+    gap: 48px;
+    box-shadow: var(--shadow-sm);
+}
+.welcome-text { flex: 2; }
+.welcome-text h1 { font-size: 2.2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; line-height: 1.3; }
+.welcome-text p { font-size: 1.1rem; color: var(--text-secondary); max-width: 600px; margin-bottom: 32px; }
+.welcome-logo { flex: 1; text-align: center; }
+.welcome-logo img { max-width: 250px; animation: float 2s ease-in-out infinite; }
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}

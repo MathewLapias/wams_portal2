@@ -1,0 +1,87 @@
+/*static/css/edit_form.css*/
+.edit-form-card { padding: 1rem; }
+    .form-section-card {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+    .form-section { margin-bottom: 24px; }
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #0052cc;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .form-grid {
+        display: grid;
+        gap: 20px;
+    }
+    .form-grid-2col { grid-template-columns: repeat(3, 1fr); }
+    .form-grid-3col { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+    .form-grid-4col { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .time-slot-group {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 16px;
+        background-color: #fff;
+    }
+    .time-slot-group h5 { font-weight: 600; margin-bottom: 12px; }
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+    .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+    
+    /* === STYLE BARU UNTUK TOMBOL AKSI === */
+    .form-actions {
+        margin-top: 32px;
+        padding-top: 20px;
+        border-top: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: flex-end; /* Pindahkan tombol ke kanan */
+        align-items: center;
+        gap: 12px;
+    }
+    .form-actions .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease-in-out;
+    }
+    .form-actions .btn-success {
+        background-color: #0052cc; /* Warna biru primer */
+        color: white;
+    }
+    .form-actions .btn-success:hover {
+        background-color: #0041a3; /* Warna biru lebih gelap saat hover */
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .form-actions .btn-secondary {
+        background-color: #f8f9fa;
+        color: #495057;
+        border: 1px solid #ced4da;
+    }
+     .form-actions .btn-secondary:hover {
+        background-color: #e2e6ea;
+    }

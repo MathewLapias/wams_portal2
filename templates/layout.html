@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}WAMS Portal{% endblock %}</title>
+    <link rel="icon" type="image/webp" href="{{ url_for('static', filename='image/djpb_sulut.webp') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+</head>
+<body class="bg-gray-100">
+    
+    <div class="relative h-screen flex overflow-hidden">
+
+        <div id="mobile-overlay" class="fixed inset-0 bg-black opacity-50 z-30 hidden md:hidden"></div>
+
+        <aside id="sidebar" class="bg-white dark:bg-gray-800 text-gray-800 w-64 p-4 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-200 ease-in-out z-40 shadow-lg md:shadow-none flex flex-col">
+            
+            <div class="flex items-center justify-between">
+                <a href="{{ url_for('portal_page') }}" class="flex items-center space-x-4">
+                    <img src="{{ url_for('static', filename='image/djpb_sulut.webp') }}" alt="Logo DJPb" class="h-12 md:h-16 w-auto transition-all">
+                    <span class="text-lg md:text-xl font-bold leading-tight">WAMS<br>Dashboard</span>
+                </a>
+                <button id="close-sidebar-btn" class="md:hidden text-gray-600 hover:text-gray-900">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="user-info bg-gray-100 p-3 space-y-3 rounded-lg flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-user-circle text-2xl text-gray-500"></i>
+                    <span class="font-semibold text-sm">Halo, {{ current_user.username }}</span>
+                </div>
+                <a href="{{ url_for('logout') }}" class="logout-button text-gray-500 hover:text-red-600" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+
+            <nav class="nav-menu flex-grow overflow-y-auto space-y-3">
+                <a href="/" class="flex items-center py-2.5 px-4 rounded-lg transition-colors duration-150
+                    {% if request.path == url_for('portal_page') and not request.args.get('kppn') %}
+                        bg-blue-600 text-white font-semibold
+                    {% else %}
+                        text-gray-600 hover:bg-blue-100 hover:text-gray-800
+                    {% endif %}
+                ">
+                    <i class="fas fa-home w-6"></i> Beranda
+                </a>
+                {% if current_user.role == 'admin' %}
+                <a href="{{ url_for('admin_dashboard') }}" class="flex items-center py-2.5 px-4 rounded-lg transition-colors duration-150
+                    {% if request.path.startswith('/admin') %}
+                        bg-blue-600 text-white font-semibold
+                    {% else %}
+                        text-gray-600 hover:bg-blue-100 hover:text-gray-800
+                    {% endif %}
+                ">
+                    <i class="fas fa-user-shield w-6"></i> Panel Admin
+                </a>
+                {% endif %}
+                {% for id, name in kppn_list.items() %}
+                    <div class="nav-group">
+                        <a href="#" class="has-submenu flex items-center justify-between w-full py-2.5 px-4 rounded-lg transition-colors duration-150 
+                            {% if active_kppn == id %}
+                                bg-blue-600 text-white font-semibold hover:bg-blue-600
+                            {% else %}
+                                text-gray-600 hover:bg-blue-100 hover:text-gray-800
+                            {% endif %}
+                        ">
+                            <span class="flex items-center"><i class="fas fa-building-columns w-6"></i> {{ name }}</span>
+                            <i class="fas fa-chevron-right arrow {% if active_kppn == id %}rotate-90 text-white{% endif %} transition-transform duration-300"></i>
+                        </a>
+                        <div class="submenu {% if active_kppn != id %}hidden{% endif %} mt-1 pl-8 space-y-1">
+                            {% for m_id, m_name in modul_list.items() %}
+                                <a href="/?kppn={{ id }}&modul={{ m_id }}" class="block py-2 px-3 rounded-md text-sm transition-colors duration-150
+                                    {% if active_kppn == id and active_modul == m_id %}
+                                        bg-blue-500 text-white font-semibold 
+                                    {% else %}
+                                        text-gray-600 hover:bg-blue-100 hover:text-gray-800
+                                    {% endif %}
+                                ">{{ m_name }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </nav>
+        </aside>
+    
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            <div class="bg-white shadow-sm p-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">{% block page_title %}Beranda{% endblock %}</h2>
+                </div>
+            </div>
+
+            <div class="p-4 md:p-6 flex-grow">
+                 {% block content %}{% endblock %}
+            </div>
+
+            <footer class="text-center p-6 text-sm text-gray-500 mt-auto">
+                Copyright © 2025 Kanwil DJPb Provinsi Sulawesi Utara. All rights reserved.
+            </footer>
+        </main>
+    </div>
+    
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/edit_form.js') }}" defer></script>
+
+</body>
+</html>

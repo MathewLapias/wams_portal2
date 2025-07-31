@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+
+{% block page_title %}
+    Panel Admin - Statistik Penggunaan
+{% endblock %}
+
+{% block content %}
+<div class="p-4 md:p-6 space-y-8">
+
+    <div class="flex items-center gap-4">
+         <a href="{{ url_for('admin_dashboard') }}" class="text-gray-500 hover:text-gray-800">
+            <i class="fas fa-arrow-left text-xl"></i>
+        </a>
+        <div>
+            <h2 class="text-3xl font-extrabold text-gray-900">Statistik Penggunaan</h2>
+            <p class="mt-1 text-lg text-gray-600">Analisis bagaimana aplikasi WAMS digunakan.</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 flex items-center gap-5">
+            <div class="p-4 bg-blue-100 rounded-full"><i class="fas fa-users text-3xl text-blue-600"></i></div>
+            <div>
+                <p class="text-base font-medium text-gray-600">Total Pengguna Terdaftar</p>
+                <p class="text-4xl font-bold text-gray-900">{{ total_users }}</p>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+            <h3 class="font-bold text-lg text-gray-800 mb-3">Modul Paling Sering Dilihat</h3>
+            <ul class="space-y-2">
+                {% for module, count in popular_modules %}
+                    <li class="flex items-center justify-between text-sm">
+                        <span class="font-medium text-gray-700">{{ loop.index }}. {{ module }}</span>
+                        <span class="px-2 py-0.5 font-semibold text-blue-800 bg-blue-100 rounded-full">{{ count }}x dilihat</span>
+                    </li>
+                {% else %}
+                    <li class="text-sm text-gray-500">Belum ada data.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+         <h3 class="font-bold text-lg text-gray-800 mb-4">Aktivitas Login (30 Hari Terakhir)</h3>
+        <div class="h-96">
+            <canvas id="login-chart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('login-chart').getContext('2d');
+    const chartData = JSON.parse('{{ login_chart_data | safe }}');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: chartData.labels,
+            datasets: [{
+                label: 'Jumlah Login',
+                data: chartData.data,
+                backgroundColor: 'rgba(59, 130, 246, 0.75)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1,
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+            plugins: { legend: { display: false } }
+        }
+    });
+});
+</script>
+{% endblock %}

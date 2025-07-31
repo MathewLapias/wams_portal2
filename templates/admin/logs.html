@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block page_title %}
+    Panel Admin - Log Aktivitas
+{% endblock %}
+
+{% block content %}
+<div class="p-4 md:p-6 space-y-8">
+    <div class="flex items-center gap-4">
+         <a href="{{ url_for('admin_dashboard') }}" class="text-gray-500 hover:text-gray-800">
+            <i class="fas fa-arrow-left text-xl"></i>
+        </a>
+        <div>
+            <h2 class="text-3xl font-extrabold text-gray-900">Log Aktivitas Sistem</h2>
+            <p class="mt-1 text-lg text-gray-600">Rekaman semua tindakan penting yang terjadi dalam aplikasi.</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+        <table class="w-full text-sm text-left text-gray-600">
+            <thead class="bg-gray-50 text-xs text-gray-700 uppercase">
+                <tr>
+                    <th scope="col" class="px-6 py-3">Waktu (WITA)</th>
+                    <th scope="col" class="px-6 py-3">Username</th>
+                    <th scope="col" class="px-6 py-3">Aktivitas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs.items %}
+                <tr class="bg-white border-b hover:bg-gray-50">
+                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ log.timestamp | to_wita }}</td>
+                    <td class="px-6 py-4">{{ log.username }}</td>
+                    <td class="px-6 py-4">{{ log.action }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="p-4 flex items-center justify-between border-t border-gray-200">
+            <span class="text-sm text-gray-700">
+                Halaman <span class="font-semibold">{{ logs.page }}</span> dari <span class="font-semibold">{{ logs.pages }}</span>
+            </span>
+            <div class="inline-flex -space-x-px rounded-md shadow-sm">
+                {% if logs.has_prev %}
+                    <a href="{{ url_for('admin_logs', page=logs.prev_num) }}" class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">« Sebelumnya</a>
+                {% endif %}
+                {% if logs.has_next %}
+                    <a href="{{ url_for('admin_logs', page=logs.next_num) }}" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700">Berikutnya »</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

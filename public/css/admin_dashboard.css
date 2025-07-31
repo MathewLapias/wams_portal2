@@ -1,0 +1,65 @@
+/*static/css/admin_dashboard.css*/
+.btn-link { background: none; border: none; color: var(--primary-blue); cursor: pointer; text-decoration: underline; padding: 0; }
+.btn-link-danger { background: none; border: none; color: #de350b; cursor: pointer; text-decoration: underline; padding: 0; }
+
+.management-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+.management-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.management-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.management-card .card-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+.management-card .card-title .icon {
+    color: #0052cc;
+    font-size: 1.2rem;
+}
+.management-card .card-title h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.module-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.module-list li a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 8px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-size: 0.95rem;
+}
+.module-list li a:hover {
+    background-color: #f2f6fc;
+    color: #0052cc;
+    font-weight: 500;
+}
+.card-header .subtitle {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 4px;
+    margin-bottom: 0;
+}

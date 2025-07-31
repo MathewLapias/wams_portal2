@@ -1,0 +1,86 @@
+/*static/css/manage_data.css*/
+.page-actions {
+    margin-bottom: 20px;
+}
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+.btn-back:hover {
+    background-color: #5a6268;
+}
+
+.data-management-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.data-table-reimagined {
+    width: 100%;
+    border-collapse: collapse;
+}
+.data-table-reimagined th, .data-table-reimagined td {
+    padding: 12px 16px;
+    border: 1px solid #dee2e6;
+    text-align: left;
+    vertical-align: middle;
+}
+.data-table-reimagined thead th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+}
+.data-table-reimagined tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+.data-table-reimagined .cell-main {
+    font-weight: 500;
+}
+.data-table-reimagined .cell-sub {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+.data-table-reimagined .total-akhir {
+    font-size: 1.1rem;
+    text-align: center;
+}
+.data-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 120px;
+}
+.data-group .stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+.stat.total { background-color: #e9ecef; }
+.stat.success { background-color: #d4edda; color: #155724; }
+.stat.warning { background-color: #fff3cd; color: #856404; }
+
+.actions-column {
+    width: 120px;
+    text-align: center;
+}
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+

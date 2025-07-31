@@ -1,0 +1,154 @@
+{% extends "layout.html" %}
+
+{% block page_title %}
+    Panel Admin
+{% endblock %}
+
+{% block content %}
+<div class="p-4 md:p-6 space-y-8">
+
+    <div>
+        <h2 class="text-3xl font-extrabold text-gray-900">Panel Admin</h2>
+        <p class="mt-1 text-lg text-gray-600">Selamat datang, {{ current_user.username }}. Kelola sistem WAMS dari sini.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+            <div class="flex justify-between items-start">
+                <h3 class="text-xl font-bold text-gray-800">Statistik Cepat</h3>
+                <a href="{{ url_for('admin_stats') }}" class="text-sm font-medium text-blue-600 hover:text-blue-800">Lihat Detail &rarr;</a>
+            </div>
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-blue-200 rounded-lg"><i class="fas fa-users text-blue-800"></i></div>
+                        <div class="ml-4">
+                            <p class="text-sm text-blue-900 font-medium">Total Pengguna</p>
+                            <p class="text-2xl font-bold text-blue-900">{{ users|length }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-green-50 p-4 rounded-xl border border-green-200">
+                     <div class="flex items-center">
+                        <div class="p-3 bg-green-200 rounded-lg"><i class="fas fa-eye text-green-800"></i></div>
+                        <div class="ml-4">
+                            <p class="text-sm text-green-900 font-medium">Modul Terpopuler</p>
+                            {% set popular_module = popular_modules[0][0] if popular_modules else 'N/A' %}
+                            <p class="text-lg font-bold text-green-900 truncate">{{ popular_module }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+             <div class="flex justify-between items-start">
+                <h3 class="text-xl font-bold text-gray-800">Aktivitas Terbaru</h3>
+                <a href="{{ url_for('admin_logs') }}" class="text-sm font-medium text-blue-600 hover:text-blue-800">Lihat Semua &rarr;</a>
+            </div>
+            <ul class="mt-4 space-y-3">
+                {% for log in latest_logs %}
+                    <li class="flex items-start text-sm">
+                        <i class="fas fa-history text-gray-400 mt-1 mr-3"></i>
+                        <div>
+                            <p class="text-gray-800"><strong class="font-semibold">{{ log.username }}</strong> {{ log.action|truncate(50) }}</p>
+                            <p class="text-xs text-gray-500">{{ log.timestamp|to_wita }}</p>
+                        </div>
+                    </li>
+                {% else %}
+                    <li class="text-sm text-gray-500">Belum ada aktivitas.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200">
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-xl font-bold text-gray-800">Manajemen Pengguna</h3>
+            <p class="mt-1 text-sm text-gray-600">Kelola pengguna, ubah peran, dan lakukan reset password.</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="p-6">
+                {% for category, message in messages %}
+                    <div class="bg-{{ 'blue' if category == 'success' else 'red' }}-100 text-{{ 'blue' if category == 'success' else 'red' }}-800 p-4 rounded-lg text-sm" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <ul class="divide-y divide-gray-200">
+            {% for user in users %}
+            <li class="p-4 flex flex-col md:flex-row items-start md:items-center justify-between hover:bg-gray-50/50 transition-colors duration-150">
+                
+                <div class="flex items-center gap-4 mb-4 md:mb-0 flex-1">
+                    <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl font-bold flex-shrink-0 border border-blue-200">
+                        {{ user.username[0]|upper }}
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">{{ user.username }}</p>
+                        {% if user.role == 'admin' %}
+                            <span class="px-2 py-0.5 inline-flex text-xs font-semibold rounded-full bg-blue-100 text-blue-800"><i class="fas fa-user-shield mr-1.5"></i>Admin</span>
+                        {% else %}
+                            <span class="px-2 py-0.5 inline-flex text-xs font-semibold rounded-full bg-gray-100 text-gray-700"><i class="fas fa-user mr-1.5"></i>User</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                    {% if user.id == current_user.id %}
+                        <span class="px-4 py-2 text-sm text-gray-400 font-medium">(Ini adalah Anda)</span>
+                    {% else %}
+                        <form action="{{ url_for('toggle_role', user_id=user.id) }}" method="POST" class="flex-grow md:flex-grow-0">
+                            {% if user.role == 'user' %}
+                                <button type="submit" class="w-full text-center px-3 py-2 text-sm font-medium text-green-700 bg-green-100 rounded-lg hover:bg-green-200 transition-colors">Promote</button>
+                            {% else %}
+                                <button type="submit" class="w-full text-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">Demote</button>
+                            {% endif %}
+                        </form>
+                        <form action="{{ url_for('reset_password', user_id=user.id) }}" method="POST" class="flex-grow md:flex-grow-0">
+                             <button type="submit" class="w-full text-center px-3 py-2 text-sm font-medium text-yellow-800 bg-yellow-100 rounded-lg hover:bg-yellow-200 transition-colors" onclick="return confirm('Anda yakin ingin mereset password pengguna ini?')">Reset</button>
+                        </form>
+                        <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" class="flex-grow md:flex-grow-0">
+                             <button type="submit" class="w-full text-center px-3 py-2 text-sm font-medium text-red-700 bg-red-100 rounded-lg hover:bg-red-200 transition-colors" onclick="return confirm('PERINGATAN: Menghapus pengguna tidak dapat diurungkan. Lanjutkan?')">Hapus</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200">
+         <div class="p-6 border-b border-gray-200">
+            <h3 class="text-xl font-bold text-gray-800">Manajemen Data Modul</h3>
+            <p class="mt-1 text-sm text-gray-600">Pilih modul untuk menambah, melihat, mengubah, atau menghapus data.</p>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for kppn_id, kppn_name in kppn_list.items() %}
+                <div class="bg-gray-50/80 border border-gray-200 rounded-xl p-4 transition-all hover:shadow-md hover:border-blue-300">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-building-columns text-blue-600"></i>
+                        <h4 class="font-bold text-gray-800">{{ kppn_name }}</h4>
+                    </div>
+                    <ul class="space-y-1">
+                        {% for modul_id, modul_name in modul_list.items() %}
+                        <li>
+                            <a href="{{ url_for('manage_data', kppn_id=kppn_id, modul_id=modul_id) }}" class="flex justify-between items-center p-2 text-sm text-gray-700 rounded-md hover:bg-blue-100 hover:text-blue-800 font-medium">
+                                <span>{{ modul_name }}</span>
+                                <i class="fas fa-chevron-right text-xs"></i>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - WAMS Portal</title>
+    <link rel="icon" type="image/webp" href="{{ url_for('static', filename='image/djpb_sulut.webp') }}">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Menambahkan background dan overlay di sini agar konsisten */
+        body {
+            background-image: url("{{ url_for('static', filename='image/auth_bg1.png') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="relative min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-gray-900/80 to-blue-900/70">
+        {% block auth_content %}{% endblock %}
+    </div>
+</body>
+</html>

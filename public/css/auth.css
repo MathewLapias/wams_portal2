@@ -1,0 +1,168 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary-blue: #0052cc;
+    --primary-blue-dark: #0041a3;
+    --text-primary: #172b4d;
+    --text-secondary: #5e6c84;
+    --border-color: #dfe1e6;
+    --card-background: #ffffff;
+    --border-radius: 12px;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-primary);
+    line-height: 1.6;
+    background-image: linear-gradient(rgba(0, 40, 100, 0.7), rgba(0, 20, 50, 0.85)), url('../image/auth_bg1.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.auth-box {
+    width: 100%;
+    /* KOTAK DIBUAT LEBIH KECIL/Ramping */
+    max-width: 400px; 
+    background-color: var(--card-background);
+    /* PADDING DISESUAIKAN & TAMBAHAN GAYA */
+    padding: 32px; 
+    border-radius: 16px; /* Sedikit lebih besar radiusnya */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Border halus */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15); /* Shadow lebih lembut */
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.auth-box-logo {
+    height: 100px;
+    width: auto;
+    /* ANIMASI BARU UNTUK LOGO */
+    animation: float 4s ease-in-out infinite;
+}
+
+.auth-box h2 {
+    font-size: 1.8rem;
+    margin: 0 0 24px 0;
+    text-align: center;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9AADCE;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: all 0.3s ease; /* Transisi lebih halus */
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.2);
+    transform: translateY(-1px); /* Efek angkat saat fokus */
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--primary-blue);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    /* ANIMASI BARU UNTUK TOMBOL */
+    animation: pulse 2.5s infinite;
+}
+
+.btn-submit:hover {
+    background-color: var(--primary-blue-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 82, 204, 0.3);
+    animation-play-state: paused; /* Hentikan animasi pulse saat hover */
+}
+
+.switch-form {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.switch-form a {
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.alert {
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    color: #fff;
+    text-align: center;
+}
+
+.alert-danger { background-color: #dc3545; }
+
+.error-text {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: -15px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+/* === KEYFRAMES UNTUK ANIMASI BARU === */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0, 82, 204, 0.5); }
+    70% { box-shadow: 0 0 0 10px rgba(0, 82, 204, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 82, 204, 0); }
+}
