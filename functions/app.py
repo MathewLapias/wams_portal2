@@ -764,10 +764,3 @@ def get_gspread_client():
         except Exception as e:
             print(f"Gagal memuat credentials.json lokal: {e}")
             return None
-
-# HAPUS SETELAH DIGUNAKAN PERTAMA KALI
-@app.route('/init-db-first-time')
-def init_db():
-    with app.app_context():
-        db.create_all()
-    return "Database tables created successfully!"
