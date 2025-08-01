@@ -25,8 +25,6 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 import io
 from flask import Response
 from calendar import monthrange
-import pandas as pd
-from google.oauth2.service_account import Credentials
 
 app = Flask(__name__, template_folder='../templates', static_folder='../public')
 
@@ -111,28 +109,6 @@ MONTH_MAP = {
     "Juli": 7, "Agustus": 8, "September": 9, "Oktober": 10, "November": 11, "Desember": 12
 }
 
-# --- FUNGSI HELPER & PEMROSESAN ---
-def get_gspread_client():
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        'https://www.googleapis.com/auth/spreadsheets',
-        "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/drive"
-    ]
-    
-    creds_dict = app.config.get('GCP_CREDS_DICT')
-    
-    if creds_dict:
-        creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
-        return gspread.authorize(creds)
-    else:
-        print("PERINGATAN: GCP_CREDS_DICT tidak ditemukan. Mencoba fallback dari file credentials.json.")
-        try:
-            creds = Credentials.from_service_account_file("credentials.json", scopes=scope)
-            return gspread.authorize(creds)
-        except Exception as e:
-            print(f"Gagal memuat credentials.json lokal: {e}")
-            return None
 
 def get_data_from_sheet(client, file_name, sheet_name):
     try:
@@ -766,6 +742,28 @@ def get_modul_data(kppn_id, modul_id):
     except Exception as e:
         print(f"!!! SERVER ERROR ({kppn_id}/{modul_id}): {e} !!!")
         return jsonify({"error": f"Terjadi kesalahan di server: {e}"}), 500
+
+def get_gspread_client():
+    scope = [
+        "https://spreadsheets.google.com/feeds",
+        'https://www.googleapis.com/auth/spreadsheets',
+        "https://www.googleapis.com/auth/drive.file",
+        "https://www.googleapis.com/auth/drive"
+    ]
+    
+    creds_dict = app.config.get('GCP_CREDS_DICT')
+    
+    if creds_dict:
+        creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
+        return gspread.authorize(creds)
+    else:
+        print("PERINGATAN: GCP_CREDS_DICT tidak ditemukan. Mencoba fallback dari file credentials.json.")
+        try:
+            creds = Credentials.from_service_account_file("credentials.json", scopes=scope)
+            return gspread.authorize(creds)
+        except Exception as e:
+            print(f"Gagal memuat credentials.json lokal: {e}")
+            return None
 
 # HAPUS SETELAH DIGUNAKAN PERTAMA KALI
 @app.route('/init-db-first-time')
